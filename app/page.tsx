@@ -27,7 +27,7 @@ export default function Home() {
           </Link>
         }
       >
-        <SignInButton mode="modal">
+        <SignInButton mode="modal" forceRedirectUrl="/dashboard">
           <button className="rounded-full bg-green-700 px-8 py-3 text-base font-semibold text-white hover:bg-green-800 transition-colors shadow">
             เข้าสู่ระบบ
           </button>
