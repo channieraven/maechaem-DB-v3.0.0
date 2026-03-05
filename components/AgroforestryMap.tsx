@@ -34,10 +34,14 @@ interface PopupInfo {
   tambon: string;
 }
 
-export default function AgroforestryMap() {
+interface AgroforestryMapProps {
+  plots?: FeatureCollection | null;
+}
+
+export default function AgroforestryMap({ plots }: AgroforestryMapProps) {
   // State สำหรับเก็บข้อมูล GeoJSON ที่โหลดมา
-  const [plotsData, setPlotsData] = useState<FeatureCollection | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [plotsData, setPlotsData] = useState<FeatureCollection | null>(plots ?? null);
+  const [loading, setLoading] = useState(!plots);
   const [error, setError] = useState<string | null>(null);
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
 
@@ -51,6 +55,12 @@ export default function AgroforestryMap() {
 
   // ดึงข้อมูลตอนที่ Component โหลดครั้งแรก
   useEffect(() => {
+    if (plots) {
+      setPlotsData(plots);
+      setLoading(false);
+      return;
+    }
+
     const fetchPlots = async () => {
       try {
         const response = await fetch('/api/plots');
@@ -65,7 +75,7 @@ export default function AgroforestryMap() {
     };
 
     fetchPlots();
-  }, []);
+  }, [plots]);
 
   // แสดง Popup เมื่อคลิกที่แปลง
   const onMapClick = useCallback((event: MapMouseEvent) => {
