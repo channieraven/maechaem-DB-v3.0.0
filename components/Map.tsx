@@ -62,20 +62,20 @@ export default function MapComponent({ plots }: MapComponentProps) {
       style: {
         version: 8,
         sources: {
-          osm: {
+          satellite: {
             type: "raster",
-            tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+            tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
             tileSize: 256,
             attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+              'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
             maxzoom: 19,
           },
         },
         layers: [
           {
-            id: "osm-tiles",
+            id: "satellite-tiles",
             type: "raster",
-            source: "osm",
+            source: "satellite",
             minzoom: 0,
             maxzoom: 19,
           },
