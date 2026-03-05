@@ -69,6 +69,7 @@ export default async function DashboardPage() {
                 plot_code?: string;
                 group_number?: string | number;
                 area_rai?: number;
+                area_sqm?: number;
                 tambon?: string;
                 elev_mean?: number;
               };
@@ -88,6 +89,9 @@ export default async function DashboardPage() {
                   )}
                   {p.area_rai != null && (
                     <p className="text-gray-500">{p.area_rai} ไร่</p>
+                  )}
+                  {p.area_sqm != null && (
+                    <p className="text-gray-500">{p.area_sqm.toLocaleString()} ตร.ม.</p>
                   )}
                   {p.tambon != null && (
                     <p className="text-gray-500">ต.{p.tambon}</p>
