@@ -7,6 +7,16 @@ import type { StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { PlotFeatureCollection } from "@/components/shared";
 
+/**
+ * Mapbox tileset overlay — a custom raster layer uploaded via Mapbox Studio
+ * (e.g. a land-use / DEM GeoTIFF) rendered on top of the satellite base map.
+ * Values come from environment variables so the token and tileset ID can be
+ * changed without touching source code.  The public token (pk.*) is safe to
+ * expose in the browser.
+ */
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
+const MAPBOX_TILESET_ID = process.env.NEXT_PUBLIC_MAPBOX_TILESET_ID ?? "";
+
 // 🛰️ Satellite base map using Esri World Imagery raster tiles
 const SATELLITE_MAP_STYLE: StyleSpecification = {
   version: 8,
@@ -21,6 +31,19 @@ const SATELLITE_MAP_STYLE: StyleSpecification = {
         'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
       maxzoom: 19,
     },
+    ...(MAPBOX_TOKEN && MAPBOX_TILESET_ID
+      ? {
+          'mapbox-overlay': {
+            type: 'raster' as const,
+            tiles: [
+              `https://api.mapbox.com/v4/${MAPBOX_TILESET_ID}/{z}/{x}/{y}.png?access_token=${MAPBOX_TOKEN}`,
+            ],
+            tileSize: 256,
+            attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a>",
+            maxzoom: 22,
+          },
+        }
+      : {}),
   },
   layers: [
     {
@@ -30,6 +53,18 @@ const SATELLITE_MAP_STYLE: StyleSpecification = {
       minzoom: 0,
       maxzoom: 19,
     },
+    ...(MAPBOX_TOKEN && MAPBOX_TILESET_ID
+      ? [
+          {
+            id: 'mapbox-overlay-tiles',
+            type: 'raster' as const,
+            source: 'mapbox-overlay',
+            minzoom: 0,
+            maxzoom: 22,
+            paint: { 'raster-opacity': 0.7 },
+          },
+        ]
+      : []),
   ],
 };
 

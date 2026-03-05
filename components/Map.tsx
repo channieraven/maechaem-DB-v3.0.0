@@ -37,6 +37,17 @@ const PLOTS_SOURCE_ID = "plots-source";
 const PLOTS_FILL_LAYER_ID = "plots-fill";
 const PLOTS_OUTLINE_LAYER_ID = "plots-outline";
 
+/**
+ * Mapbox tileset overlay — a custom raster layer (e.g. a land-use / DEM GeoTIFF
+ * uploaded via Mapbox Studio) rendered on top of the satellite base map.
+ *
+ * Values come from environment variables so that the token and tileset ID can
+ * be changed without touching source code.  The public token (pk.*) is safe
+ * to expose in the browser.
+ */
+const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? "";
+const MAPBOX_TILESET_ID = process.env.NEXT_PUBLIC_MAPBOX_TILESET_ID ?? "";
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -56,9 +67,40 @@ export default function MapComponent({ plots }: MapComponentProps) {
   useEffect(() => {
     if (!containerRef.current) return;
 
+    // Build map style sources and layers.  The Mapbox overlay is added only
+    // when both the token and tileset ID are available.
+    const mapboxOverlaySources: Record<string, maplibregl.RasterSourceSpecification> =
+      MAPBOX_TOKEN && MAPBOX_TILESET_ID
+        ? {
+            "mapbox-overlay": {
+              type: "raster",
+              tiles: [
+                `https://api.mapbox.com/v4/${MAPBOX_TILESET_ID}/{z}/{x}/{y}.png?access_token=${MAPBOX_TOKEN}`,
+              ],
+              tileSize: 256,
+              attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a>",
+              maxzoom: 22,
+            },
+          }
+        : {};
+
+    const mapboxOverlayLayers: maplibregl.RasterLayerSpecification[] =
+      MAPBOX_TOKEN && MAPBOX_TILESET_ID
+        ? [
+            {
+              id: "mapbox-overlay-tiles",
+              type: "raster",
+              source: "mapbox-overlay",
+              minzoom: 0,
+              maxzoom: 22,
+              paint: { "raster-opacity": 0.7 },
+            },
+          ]
+        : [];
+
     const map = new maplibregl.Map({
       container: containerRef.current,
-      // OpenStreetMap raster tiles via MapLibre raster tile style syntax.
+      // Satellite base layer + optional Mapbox tileset overlay.
       style: {
         version: 8,
         sources: {
@@ -70,6 +112,7 @@ export default function MapComponent({ plots }: MapComponentProps) {
               'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
             maxzoom: 19,
           },
+          ...mapboxOverlaySources,
         },
         layers: [
           {
@@ -79,6 +122,7 @@ export default function MapComponent({ plots }: MapComponentProps) {
             minzoom: 0,
             maxzoom: 19,
           },
+          ...mapboxOverlayLayers,
         ],
       },
       center: MAE_CHAEM_CENTER,
