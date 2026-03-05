@@ -2,54 +2,14 @@
  * Dashboard page — protected by Clerk middleware.
  *
  * Renders a full-viewport map using MapLibre GL JS alongside a sidebar
- * for plot statistics. In production, replace the `SAMPLE_PLOTS` constant
- * with a real fetch from your Next.js API route that queries the Neon DB.
+ * for plot statistics. Plot data is fetched server-side from the /api/plots
+ * route which queries the Neon DB.
  */
 
 import { auth } from "@clerk/nextjs/server";
+import { headers } from "next/headers";
 import type { FeatureCollection } from "geojson";
 import MapWrapper from "@/components/MapWrapper";
-
-// ---------------------------------------------------------------------------
-// Sample data — replace with a real DB query in production.
-// ---------------------------------------------------------------------------
-const SAMPLE_PLOTS: FeatureCollection = {
-  type: "FeatureCollection",
-  features: [
-    {
-      type: "Feature",
-      properties: { name: "แปลง A-01", plot_id: "A-01", area_rai: 5.2 },
-      geometry: {
-        type: "Polygon",
-        coordinates: [
-          [
-            [98.42, 18.49],
-            [98.43, 18.49],
-            [98.43, 18.50],
-            [98.42, 18.50],
-            [98.42, 18.49],
-          ],
-        ],
-      },
-    },
-    {
-      type: "Feature",
-      properties: { name: "แปลง B-03", plot_id: "B-03", area_rai: 3.8 },
-      geometry: {
-        type: "Polygon",
-        coordinates: [
-          [
-            [98.44, 18.51],
-            [98.455, 18.51],
-            [98.455, 18.52],
-            [98.44, 18.52],
-            [98.44, 18.51],
-          ],
-        ],
-      },
-    },
-  ],
-};
 
 // ---------------------------------------------------------------------------
 // Page
@@ -59,6 +19,24 @@ export default async function DashboardPage() {
   // Clerk auth() returns the current session. The middleware already
   // redirects unauthenticated users, so userId is always defined here.
   const { userId } = await auth();
+
+  // Fetch plot data from the API route server-side.
+  // Build the base URL from the incoming request host so this works in all
+  // environments (local dev, preview deployments, production).
+  let plots: FeatureCollection = { type: "FeatureCollection", features: [] };
+  try {
+    const headersList = await headers();
+    const host = headersList.get("host") ?? "localhost:3000";
+    const protocol = host.startsWith("localhost") ? "http" : "https";
+    const res = await fetch(`${protocol}://${host}/api/plots`, {
+      cache: "no-store",
+    });
+    if (res.ok) {
+      plots = await res.json();
+    }
+  } catch {
+    // If the fetch fails, render the map with an empty feature collection.
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-950">
@@ -81,25 +59,41 @@ export default async function DashboardPage() {
         {/* Sidebar */}
         <aside className="hidden md:flex w-64 flex-col gap-4 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 overflow-y-auto">
           <h2 className="font-semibold text-gray-800 dark:text-gray-200">
-            ข้อมูลแปลง
+            ข้อมูลแปลง ({plots.features.length} แปลง)
           </h2>
           <ul className="space-y-2">
-            {SAMPLE_PLOTS.features.map((f) => {
+            {plots.features.map((f, i) => {
               const p = f.properties as {
-                name?: string;
-                plot_id?: string;
+                id?: number;
+                farmer_name?: string;
+                plot_code?: string;
+                group_number?: string | number;
                 area_rai?: number;
+                tambon?: string;
+                elev_mean?: number;
               };
               return (
                 <li
-                  key={p.plot_id}
+                  key={p.plot_code ?? p.id ?? i}
                   className="rounded-md bg-gray-50 dark:bg-gray-800 p-3 text-sm"
                 >
                   <p className="font-medium text-gray-900 dark:text-gray-100">
-                    {p.name ?? p.plot_id}
+                    {p.farmer_name ?? p.plot_code ?? `แปลง ${i + 1}`}
                   </p>
+                  {p.plot_code != null && (
+                    <p className="text-gray-500">รหัส: {p.plot_code}</p>
+                  )}
+                  {p.group_number != null && (
+                    <p className="text-gray-500">กลุ่ม: {p.group_number}</p>
+                  )}
                   {p.area_rai != null && (
                     <p className="text-gray-500">{p.area_rai} ไร่</p>
+                  )}
+                  {p.tambon != null && (
+                    <p className="text-gray-500">ต.{p.tambon}</p>
+                  )}
+                  {p.elev_mean != null && (
+                    <p className="text-gray-500">{p.elev_mean} ม.</p>
                   )}
                 </li>
               );
@@ -110,7 +104,7 @@ export default async function DashboardPage() {
         {/* Map — takes up remaining space */}
         <main className="flex-1 p-4">
           <div className="h-full min-h-[500px] rounded-xl overflow-hidden shadow">
-            <MapWrapper plots={SAMPLE_PLOTS} />
+            <MapWrapper plots={plots} />
           </div>
         </main>
       </div>

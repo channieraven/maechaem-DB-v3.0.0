@@ -28,9 +28,9 @@ import "maplibre-gl/dist/maplibre-gl.css";
 // Constants
 // ---------------------------------------------------------------------------
 
-/** Geographic centre of Chiang Mai, Thailand (lng, lat — MapLibre order) */
-const CHIANG_MAI_CENTER: [number, number] = [98.9853, 18.7883];
-const DEFAULT_ZOOM = 10;
+/** Geographic centre of Mae Chaem, Thailand (lng, lat — MapLibre order) */
+const MAE_CHAEM_CENTER: [number, number] = [98.39, 18.53];
+const DEFAULT_ZOOM = 11;
 
 /** Internal IDs used for the plots GeoJSON source and its render layers. */
 const PLOTS_SOURCE_ID = "plots-source";
@@ -81,7 +81,7 @@ export default function MapComponent({ plots }: MapComponentProps) {
           },
         ],
       },
-      center: CHIANG_MAI_CENTER,
+      center: MAE_CHAEM_CENTER,
       zoom: DEFAULT_ZOOM,
       // Disable scroll-wheel zoom to avoid accidentally zooming while
       // scrolling the page.
@@ -148,20 +148,28 @@ export default function MapComponent({ plots }: MapComponentProps) {
       map.on("click", PLOTS_FILL_LAYER_ID, (e) => {
         if (!e.features?.length) return;
         const props = e.features[0].properties as {
-          name?: string;
-          plot_id?: string | number;
+          farmer_name?: string;
+          plot_code?: string | number;
+          group_number?: string | number;
           area_rai?: number;
+          tambon?: string;
+          elev_mean?: number;
         };
-        const title = props.name ?? `Plot ${props.plot_id ?? "?"}`;
-        const areaLine =
-          props.area_rai != null ? `<p>Area: ${props.area_rai} rai</p>` : "";
+        const title = props.farmer_name ?? `แปลง ${props.plot_code ?? "?"}`;
+        const lines = [
+          props.plot_code != null ? `<p>รหัสแปลง: ${props.plot_code}</p>` : "",
+          props.group_number != null ? `<p>กลุ่มที่: ${props.group_number}</p>` : "",
+          props.area_rai != null ? `<p>พื้นที่: ${props.area_rai} ไร่</p>` : "",
+          props.tambon != null ? `<p>ตำบล: ${props.tambon}</p>` : "",
+          props.elev_mean != null ? `<p>ความสูงเฉลี่ย: ${props.elev_mean} ม.</p>` : "",
+        ].join("");
 
         new maplibregl.Popup()
           .setLngLat(e.lngLat)
           .setHTML(
             `<div style="font-size:0.875rem">
                <p style="font-weight:600;margin:0 0 4px">${title}</p>
-               ${areaLine}
+               ${lines}
              </div>`
           )
           .addTo(map);
