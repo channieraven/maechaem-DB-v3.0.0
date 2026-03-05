@@ -23,7 +23,8 @@ export async function fetchPlots(): Promise<PlotFeatureCollection> {
       elev_mean,
       ST_AsGeoJSON(geom)::json AS geometry
     FROM plot_boundary_plan
-    WHERE geom IS NOT NULL;
+    WHERE geom IS NOT NULL
+    ORDER BY plot_code;
   `;
 
   return {
