@@ -152,6 +152,7 @@ export default function MapComponent({ plots }: MapComponentProps) {
           plot_code?: string | number;
           group_number?: string | number;
           area_rai?: number;
+          area_sqm?: number;
           tambon?: string;
           elev_mean?: number;
         };
@@ -160,6 +161,9 @@ export default function MapComponent({ plots }: MapComponentProps) {
           props.plot_code != null ? `<p>รหัสแปลง: ${props.plot_code}</p>` : "",
           props.group_number != null ? `<p>กลุ่มที่: ${props.group_number}</p>` : "",
           props.area_rai != null ? `<p>พื้นที่: ${props.area_rai} ไร่</p>` : "",
+          props.area_sqm != null
+            ? `<p>พื้นที่: ${Number(props.area_sqm).toLocaleString()} ตร.ม.</p>`
+            : "",
           props.tambon != null ? `<p>ตำบล: ${props.tambon}</p>` : "",
           props.elev_mean != null ? `<p>ความสูงเฉลี่ย: ${props.elev_mean} ม.</p>` : "",
         ].join("");

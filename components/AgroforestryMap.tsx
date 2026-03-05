@@ -30,6 +30,7 @@ interface PopupInfo {
   farmer_name: string;
   plot_code: string;
   area_rai: number;
+  area_sqm: number;
   tambon: string;
 }
 
@@ -79,6 +80,7 @@ export default function AgroforestryMap() {
       farmer_name: feature.properties.farmer_name ?? '-',
       plot_code: feature.properties.plot_code ?? '-',
       area_rai: feature.properties.area_rai ?? 0,
+      area_sqm: feature.properties.area_sqm ?? 0,
       tambon: feature.properties.tambon ?? '-',
     });
   }, []);
@@ -123,6 +125,7 @@ export default function AgroforestryMap() {
               <p className="font-semibold text-gray-800">{popupInfo.farmer_name}</p>
               <p className="text-gray-600">รหัสแปลง: {popupInfo.plot_code}</p>
               <p className="text-gray-600">พื้นที่: {popupInfo.area_rai} ไร่</p>
+              <p className="text-gray-600">พื้นที่: {popupInfo.area_sqm.toLocaleString()} ตร.ม.</p>
               <p className="text-gray-600">ตำบล: {popupInfo.tambon}</p>
             </div>
           </Popup>
