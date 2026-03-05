@@ -2,14 +2,14 @@
  * Dashboard page — protected by Clerk middleware.
  *
  * Renders a full-viewport map using MapLibre GL JS alongside a sidebar
- * for plot statistics. Plot data is fetched server-side from the /api/plots
- * route which queries the Neon DB.
+ * for plot statistics. Plot data is fetched directly from the Neon DB
+ * (no internal HTTP round-trip needed).
  */
 
 import { auth } from "@clerk/nextjs/server";
-import { headers } from "next/headers";
-import type { FeatureCollection } from "geojson";
 import AgroforestryMap from "@/components/AgroforestryMap";
+import { fetchPlots } from "@/lib/plots";
+import type { PlotFeatureCollection } from "@/components/shared";
 
 // ---------------------------------------------------------------------------
 // Page
@@ -20,22 +20,12 @@ export default async function DashboardPage() {
   // redirects unauthenticated users, so userId is always defined here.
   const { userId } = await auth();
 
-  // Fetch plot data from the API route server-side.
-  // Build the base URL from the incoming request host so this works in all
-  // environments (local dev, preview deployments, production).
-  let plots: FeatureCollection = { type: "FeatureCollection", features: [] };
+  // Fetch plot data directly from the database (no internal HTTP round-trip).
+  let plots: PlotFeatureCollection = { type: "FeatureCollection", features: [] };
   try {
-    const headersList = await headers();
-    const host = headersList.get("host") ?? "localhost:3000";
-    const protocol = host.startsWith("localhost") ? "http" : "https";
-    const res = await fetch(`${protocol}://${host}/api/plots`, {
-      cache: "no-store",
-    });
-    if (res.ok) {
-      plots = await res.json();
-    }
+    plots = await fetchPlots();
   } catch {
-    // If the fetch fails, render the map with an empty feature collection.
+    // If the query fails, render the map with an empty feature collection.
   }
 
   return (
