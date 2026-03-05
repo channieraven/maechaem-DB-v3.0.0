@@ -1,9 +1,13 @@
+import { neon } from '@neondatabase/serverless';
 import { NextResponse } from 'next/server';
-import { sql } from '@/lib/db';
 
 export async function GET() {
   try {
-    // ดึงข้อมูลจากฐานข้อมูล โดยใช้ ST_AsGeoJSON() แปลงพิกัดเป็น GeoJSON
+    // 1. เชื่อมต่อกับ Neon Database ด้วย URL จากไฟล์ .env.local
+    const sql = neon(process.env.DATABASE_URL!);
+
+    // 2. ดึงข้อมูลจากฐานข้อมูล
+    // ใช้ ST_AsGeoJSON() ให้ PostGIS แปลงพิกัดเป็น GeoJSON โดยตรง
     const rows = await sql`
       SELECT
         id,
@@ -19,7 +23,7 @@ export async function GET() {
       WHERE geom IS NOT NULL;
     `;
 
-    // ประกอบข้อมูลให้อยู่ในรูปแบบ GeoJSON FeatureCollection
+    // 3. จัดข้อมูลให้อยู่ในรูปแบบ FeatureCollection
     const featureCollection = {
       type: 'FeatureCollection',
       features: rows.map((row) => ({
@@ -30,6 +34,7 @@ export async function GET() {
           plot_code: row.plot_code,
           group_number: row.group_number,
           area_rai: Number(row.area_rai),
+          area_sqm: Number(row.area_sqm),
           tambon: row.tambon,
           elev_mean: Number(row.elev_mean),
         },
@@ -37,6 +42,7 @@ export async function GET() {
       })),
     };
 
+    // 4. ส่งข้อมูลกลับไปให้หน้าเว็บ
     return NextResponse.json(featureCollection);
   } catch (error) {
     console.error('Error fetching plots:', error);
