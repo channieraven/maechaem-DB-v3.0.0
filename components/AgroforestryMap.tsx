@@ -2,8 +2,35 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Map, { Source, Layer, Popup, MapMouseEvent } from 'react-map-gl/maplibre';
+import type { StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { PlotFeatureCollection } from "@/components/shared";
+
+// 🛰️ Satellite base map using Esri World Imagery raster tiles
+const SATELLITE_MAP_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    satellite: {
+      type: 'raster',
+      tiles: [
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      ],
+      tileSize: 256,
+      attribution:
+        'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      maxzoom: 19,
+    },
+  },
+  layers: [
+    {
+      id: 'satellite-tiles',
+      type: 'raster',
+      source: 'satellite',
+      minzoom: 0,
+      maxzoom: 19,
+    },
+  ],
+};
 
 // 🎨 ตั้งค่าสไตล์ของ Layer แปลงเกษตร (defined outside component to avoid re-creation on every render)
 const polygonLayerStyle = {
@@ -32,6 +59,7 @@ interface PopupInfo {
   area_rai: number;
   area_sqm: number;
   tambon: string;
+  elev_mean: number;
 }
 
 interface AgroforestryMapProps {
@@ -92,6 +120,7 @@ export default function AgroforestryMap({ plots }: AgroforestryMapProps) {
       area_rai: feature.properties.area_rai ?? 0,
       area_sqm: feature.properties.area_sqm ?? 0,
       tambon: feature.properties.tambon ?? '-',
+      elev_mean: feature.properties.elev_mean ?? 0,
     });
   }, []);
 
@@ -110,7 +139,7 @@ export default function AgroforestryMap({ plots }: AgroforestryMapProps) {
       <Map
         {...viewState}
         onMove={evt => setViewState(evt.viewState)}
-        mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+        mapStyle={SATELLITE_MAP_STYLE}
         interactive={true}
         interactiveLayerIds={[polygonLayerStyle.id]}
         onClick={onMapClick}
@@ -132,11 +161,10 @@ export default function AgroforestryMap({ plots }: AgroforestryMapProps) {
             closeOnClick={false}
           >
             <div className="p-2 text-sm">
-              <p className="font-semibold text-gray-800">{popupInfo.farmer_name}</p>
+              <p className="font-semibold text-gray-800">เจ้าของแปลง: {popupInfo.farmer_name}</p>
               <p className="text-gray-600">รหัสแปลง: {popupInfo.plot_code}</p>
-              <p className="text-gray-600">พื้นที่: {popupInfo.area_rai} ไร่</p>
-              <p className="text-gray-600">พื้นที่: {popupInfo.area_sqm.toLocaleString()} ตร.ม.</p>
-              <p className="text-gray-600">ตำบล: {popupInfo.tambon}</p>
+              <p className="text-gray-600">ขนาดพื้นที่: {popupInfo.area_rai} ไร่</p>
+              <p className="text-gray-600">ความสูงเฉลี่ย: {popupInfo.elev_mean} เมตรเหนือระดับน้ำทะเล</p>
             </div>
           </Popup>
         )}
