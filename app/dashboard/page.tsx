@@ -8,7 +8,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
-import type { FeatureCollection } from "geojson";
+import type { PlotFeatureCollection } from "@/components/shared";
 import AgroforestryMap from "@/components/AgroforestryMap";
 
 // ---------------------------------------------------------------------------
@@ -23,7 +23,7 @@ export default async function DashboardPage() {
   // Fetch plot data from the API route server-side.
   // Build the base URL from the incoming request host so this works in all
   // environments (local dev, preview deployments, production).
-  let plots: FeatureCollection = { type: "FeatureCollection", features: [] };
+  let plots: PlotFeatureCollection = { type: "FeatureCollection", features: [] };
   try {
     const headersList = await headers();
     const host = headersList.get("host") ?? "localhost:3000";

@@ -38,7 +38,7 @@ export async function GET() {
           tambon: row.tambon,
           elev_mean: Number(row.elev_mean),
         },
-        geometry: row.geometry,
+        geometry: JSON.parse(row.geometry),
       })),
     };
 
