@@ -58,7 +58,7 @@ export default function MapComponent({ plots }: MapComponentProps) {
 
     const map = new maplibregl.Map({
       container: containerRef.current,
-      // OpenStreetMap raster tiles via MapLibre raster tile style syntax.
+      // ESRI World Imagery satellite tiles via MapLibre raster tile style syntax.
       style: {
         version: 8,
         sources: {
