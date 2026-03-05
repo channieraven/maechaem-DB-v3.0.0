@@ -6,7 +6,6 @@
  * with a real fetch from your Next.js API route that queries the Neon DB.
  */
 
-import { UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import type { FeatureCollection } from "geojson";
 import MapWrapper from "@/components/MapWrapper";
@@ -68,12 +67,11 @@ export default async function DashboardPage() {
       {/* ------------------------------------------------------------------ */}
       <header className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-6 py-3 shadow-sm">
         <span className="font-semibold text-gray-900 dark:text-gray-100 text-lg">
-          🌳 Mae Chaem — Dashboard
+          Dashboard
         </span>
-        <div className="flex items-center gap-3 text-sm text-gray-500">
-          <span className="hidden sm:inline">User: {userId}</span>
-          <UserButton />
-        </div>
+        <span className="text-sm text-gray-500 hidden sm:inline">
+          User: {userId}
+        </span>
       </header>
 
       {/* ------------------------------------------------------------------ */}
