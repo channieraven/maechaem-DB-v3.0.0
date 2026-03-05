@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Map, { Source, Layer, Popup, MapMouseEvent } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import type { FeatureCollection } from 'geojson';
+import type { PlotFeatureCollection } from "@/components/shared";
 
 // 🎨 ตั้งค่าสไตล์ของ Layer แปลงเกษตร (defined outside component to avoid re-creation on every render)
 const polygonLayerStyle = {
@@ -35,12 +35,12 @@ interface PopupInfo {
 }
 
 interface AgroforestryMapProps {
-  plots?: FeatureCollection | null;
+  plots?: PlotFeatureCollection | null;
 }
 
 export default function AgroforestryMap({ plots }: AgroforestryMapProps) {
   // State สำหรับเก็บข้อมูล GeoJSON ที่โหลดมา
-  const [plotsData, setPlotsData] = useState<FeatureCollection | null>(plots ?? null);
+  const [plotsData, setPlotsData] = useState<PlotFeatureCollection | null>(plots ?? null);
   const [loading, setLoading] = useState(!plots);
   const [error, setError] = useState<string | null>(null);
   const [popupInfo, setPopupInfo] = useState<PopupInfo | null>(null);
