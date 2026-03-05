@@ -9,7 +9,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import type { FeatureCollection } from "geojson";
-import MapWrapper from "@/components/MapWrapper";
+import AgroforestryMap from "@/components/AgroforestryMap";
 
 // ---------------------------------------------------------------------------
 // Page
@@ -108,7 +108,7 @@ export default async function DashboardPage() {
         {/* Map — takes up remaining space */}
         <main className="flex-1 p-4">
           <div className="h-full min-h-[500px] rounded-xl overflow-hidden shadow">
-            <MapWrapper plots={plots} />
+            <AgroforestryMap plots={plots} />
           </div>
         </main>
       </div>
