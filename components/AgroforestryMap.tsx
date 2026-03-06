@@ -19,12 +19,11 @@ const SATELLITE_MAP_STYLE: StyleSpecification = {
     satellite: {
       type: 'raster',
       tiles: [
-        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        // เปลี่ยนมาใช้ Google Satellite Hybrid (มีภาพดาวเทียม + เส้นถนน)
+        'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
       ],
       tileSize: 256,
-      attribution:
-        'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-      maxzoom: 19,
+      maxzoom: 22, // Google ซูมได้ลึกกว่า
     },
   },
   layers: [
@@ -33,7 +32,7 @@ const SATELLITE_MAP_STYLE: StyleSpecification = {
       type: 'raster',
       source: 'satellite',
       minzoom: 0,
-      maxzoom: 19,
+      maxzoom: 22,
     },
   ],
 };
