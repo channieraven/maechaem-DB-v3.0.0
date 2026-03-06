@@ -181,11 +181,11 @@ export default function AgroforestryMap({ plots, flyToTarget }: AgroforestryMapP
         cursor="pointer"
       >
         {/* 🚁 ส่วนการดึงภาพโดรนจาก Cloudflare R2 */}
-        {DRONE_COG_URL && (
+        {(
           <Source
             id="drone-source"
             type="raster"
-            tiles={[`cog://${DRONE_COG_URL}`]}
+            tiles={[`cog://https://pub-36b2dc3bfde64f63846427f53ff367ba.r2.dev`]}
             tileSize={256}
           >
             <Layer
