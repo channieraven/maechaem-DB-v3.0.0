@@ -44,7 +44,7 @@ const polygonLayerStyle = {
   type: 'fill' as const,
   paint: {
     'fill-color': '#22c55e',
-    'fill-opacity': 0.5,
+    'fill-opacity': 0.2,
   },
 };
 
@@ -53,7 +53,7 @@ const polygonOutlineStyle = {
   type: 'line' as const,
   paint: {
     'line-color': '#166534',
-    'line-width': 2,
+    'line-width': 1,
   },
 };
 
