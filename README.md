@@ -4,7 +4,7 @@
 
 ## Tech Stack
 
-- **Next.js** (App Router) — frontend & API routes, optimised for Netlify
+- **Next.js** (App Router) — frontend & API routes, optimised for Vercel
 - **Tailwind CSS** — utility-first styling
 - **Clerk** — authentication & user management
 - **Neon Serverless Postgres + PostGIS** — geospatial database
@@ -39,6 +39,16 @@ See `.env.local.example` for the full list of required variables:
 | `CLERK_SECRET_KEY` | Clerk secret key |
 | `CLERK_WEBHOOK_SECRET` | Svix signing secret for the Clerk webhook |
 
-## Deploy on Netlify
+## Deploy on Vercel
 
-This project is configured for Netlify deployment. Connect your GitHub repository in the Netlify dashboard and set the environment variables above in **Site settings → Environment variables**.
+This project is configured for Vercel deployment. Connect your GitHub repository in the Vercel dashboard and set the environment variables above in **Project Settings → Environment Variables**.
+
+Push to the `main` branch and the GitHub Actions workflow (`.github/workflows/deploy.yml`) will automatically run `vercel --prod`.
+
+Required Vercel secrets (set in GitHub → Settings → Secrets and variables → Actions):
+
+| Secret | Where to find it |
+|---|---|
+| `VERCEL_TOKEN` | Vercel Dashboard → Account Settings → Tokens |
+| `VERCEL_ORG_ID` | `.vercel/project.json` after running `vercel link` |
+| `VERCEL_PROJECT_ID` | `.vercel/project.json` after running `vercel link` |
