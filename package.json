@@ -3,15 +3,20 @@
   "version": "3.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
+    "dev": "next dev",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.0.1",
     "@geomatico/maplibre-cog-protocol": "^0.8.0",
     "@neondatabase/serverless": "^1.0.2",
+    "@opennextjs/cloudflare": "^1.17.1",
     "maplibre-gl": "^5.19.0",
     "next": "16.1.6",
     "react": "19.2.3",
@@ -27,6 +32,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "wrangler": "^4.71.0"
   }
 }
