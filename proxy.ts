@@ -1,36 +1,20 @@
-/**
- * Clerk authentication middleware (middleware.ts — standard Next.js convention).
- * 
- * Required environment variables (set in .env.local / Vercel project settings):
- *   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
- *   CLERK_SECRET_KEY
- *
- * Public routes (no sign-in required):
- *   /              — landing page
- *   /api/webhooks/* — Clerk webhook endpoints
- *
- * All other routes (including /dashboard and nested paths) are protected
- * and will redirect unauthenticated users to the Clerk sign-in page.
- */
-
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-// Define which routes are publicly accessible without authentication.
+// 🚀 เพิ่มบรรทัดนี้ลงไป เพื่อบอกให้รันบน Cloudflare Edge!
+export const runtime = 'edge';
+
 const isPublicRoute = createRouteMatcher([
   "/",
   "/api/webhooks(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
-  // Protect every route that is NOT in the public list.
   if (!isPublicRoute(request)) {
     await auth.protect();
   }
 });
 
 export const config = {
-  // Apply the middleware to all routes except Next.js internals and static
-  // files that don't need authentication checks.
   matcher: [
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     "/(api|trpc)(.*)",
