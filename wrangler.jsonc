@@ -22,6 +22,14 @@
       "bucket_name": "maechaem-db-rfd-opennext-cache"
     }
   ],
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "50ebedaa730f4cb890a07b7132beb18c",
+      
+      // Optional. Can be used to connect to a local database for local development with `wrangler dev`
+      "localConnectionString": "<LOCAL_CONNECTION_STRING_FOR_LOCAL_DEVELOPMENT_HERE>"
+    }
   "images": {
     "binding": "IMAGES"
   },
