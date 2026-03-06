@@ -185,7 +185,7 @@ export default function AgroforestryMap({ plots, flyToTarget }: AgroforestryMapP
           <Source
             id="drone-source"
             type="raster"
-            tiles={[`cog://https://pub-36b2dc3bfde64f63846427f53ff367ba.r2.dev/maechaem-db-drone/mnj_bf-1km.tif`]}
+            tiles={[`cog://https://pub-97c3cf3b608a46bdb2dbf8d3e749a995.r2.dev/maechaem-db-drone/mnj_bf-1km.tif`]}
             tileSize={256}
           >
             <Layer
