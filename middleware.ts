@@ -1,6 +1,6 @@
 /**
  * Clerk authentication middleware (middleware.ts — standard Next.js convention).
- *
+ * 
  * Required environment variables (set in .env.local / Vercel project settings):
  *   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
  *   CLERK_SECRET_KEY
