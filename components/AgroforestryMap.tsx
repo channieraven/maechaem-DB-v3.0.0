@@ -1,11 +1,16 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import maplibregl from 'maplibre-gl';
+import { cogProtocol } from '@geomatico/maplibre-cog-protocol';
 import Map, { Source, Layer, Popup, MapMouseEvent } from 'react-map-gl/maplibre';
 import type { MapRef } from 'react-map-gl/maplibre';
 import type { StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { PlotFeatureCollection } from "@/components/shared";
+
+// Flag to prevent re-registering the COG protocol on re-renders
+let cogProtocolRegistered = false;
 
 // 🛰️ Satellite base map using Esri World Imagery raster tiles
 const SATELLITE_MAP_STYLE: StyleSpecification = {
@@ -83,6 +88,19 @@ export default function AgroforestryMap({ plots, flyToTarget }: AgroforestryMapP
     zoom: 11,
     pitch: 0,
   });
+
+  // ลงทะเบียนโปรโตคอลเพื่อให้ MapLibre อ่าน COG ได้
+  useEffect(() => {
+    // ตรวจสอบเพื่อไม่ให้ลงทะเบียนซ้ำตอน Re-render
+    if (!cogProtocolRegistered) {
+      maplibregl.addProtocol('cog', cogProtocol);
+      cogProtocolRegistered = true;
+    }
+    return () => {
+      maplibregl.removeProtocol('cog');
+      cogProtocolRegistered = false;
+    };
+  }, []);
 
   // ดึงข้อมูลตอนที่ Component โหลดครั้งแรก
   useEffect(() => {
