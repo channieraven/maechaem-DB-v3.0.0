@@ -1,54 +1,101 @@
 # Mae Chaem Agroforestry DB
 
-ระบบฐานข้อมูลโครงการปลูกป่าอเนกประสงค์ในพื้นที่คทช. แม่แจ่ม
+ระบบจัดการข้อมูลแปลงเกษตรแม่แจ่ม — ฐานข้อมูลโครงการปลูกป่าอเนกประสงค์ในพื้นที่ คทช. แม่แจ่ม
 
-## Tech Stack
+🌐 **Live:** [maechaem-db-rfd.work](https://maechaem-db-rfd.work)
 
-- **Next.js** (App Router) — frontend & API routes, optimised for Vercel
-- **Tailwind CSS** — utility-first styling
-- **Clerk** — authentication & user management
-- **Neon Serverless Postgres + PostGIS** — geospatial database
-- **MapLibre GL JS** — interactive vector map
-- **Sarabun** — Thai/Latin font loaded from Google Fonts
+---
+
+## 🚀 Tech Stack
+
+### Frontend & Framework
+
+| เทคโนโลยี | เวอร์ชัน | หน้าที่ |
+|---|---|---|
+| **Next.js** | 16 | เฟรมเวิร์กหลัก (App Router) — ทั้ง UI และ API routes |
+| **React** | 19 | ไลบรารีสร้าง Component (Dashboard, ปุ่มกด, ตาราง) |
+| **Tailwind CSS** | v4 (Oxide Engine) | Utility-first CSS — เขียนสไตล์รวดเร็ว ไม่มี config file |
+
+### 🌍 GIS & Mapping
+
+| เทคโนโลยี | หน้าที่ |
+|---|---|
+| **MapLibre GL JS** | เอนจินเรนเดอร์แผนที่แบบ Vector/Raster ลื่นไหลและปรับแต่งได้อิสระ |
+| **React Map GL** | React wrapper สำหรับ MapLibre GL JS |
+| **`@geomatico/maplibre-cog-protocol`** | ถอดรหัส Cloud Optimized GeoTIFF (COG) โดยตรงในเบราว์เซอร์ ไม่ต้องผ่าน tile server |
+| **rio cogeo** *(local tool)* | CLI บน OSGeo4W สำหรับแปลงไฟล์โดรน → Web-Optimized COG และลบขอบดำ (`--nodata 0`) |
+
+### 🔐 Backend & Data
+
+| เทคโนโลยี | หน้าที่ |
+|---|---|
+| **Clerk** | Authentication & user management — ปกป้องหน้า Dashboard จากคนนอก |
+| **Neon DB** (Serverless PostgreSQL) | ฐานข้อมูลหลักสำหรับข้อมูลแปลงเกษตร รหัสแปลง และชื่อเกษตรกร |
+
+### ☁️ Cloud Infrastructure
+
+| เทคโนโลยี | หน้าที่ |
+|---|---|
+| **Cloudflare Pages** (Edge Network) | โฮสต์ Next.js ด้วยความเร็ว Edge — เซิร์ฟเวอร์กระจายทั่วโลก รวมถึงไทย |
+| **Cloudflare R2** | Object Storage สำหรับไฟล์ภาพโดรน COG ขนาดใหญ่ — ส่ง tile ไปแสดงผลร่วมกับ COG Protocol |
+| **Cloudflare DNS** | จัดการโดเมน `maechaem-db-rfd.work` |
+
+---
 
 ## Getting Started
 
-1. Copy the environment variable template and fill in your values:
+1. คัดลอกไฟล์ตัวอย่าง environment variables แล้วกรอกค่าของคุณ:
 
    ```bash
    cp .env.local.example .env.local
    ```
 
-2. Install dependencies and start the development server:
+2. ติดตั้ง dependencies และเริ่ม development server:
 
    ```bash
    npm install
    npm run dev
    ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser.
+เปิด [http://localhost:3000](http://localhost:3000) ในเบราว์เซอร์
+
+---
 
 ## Environment Variables
 
-See `.env.local.example` for the full list of required variables:
+ดูรายละเอียดทั้งหมดใน `.env.local.example`:
 
-| Variable | Purpose |
+| Variable | หน้าที่ |
 |---|---|
 | `DATABASE_URL` | Neon connection string |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key |
 | `CLERK_SECRET_KEY` | Clerk secret key |
-| `CLERK_WEBHOOK_SECRET` | Svix signing secret for the Clerk webhook |
+| `CLERK_WEBHOOK_SECRET` | Svix signing secret สำหรับ Clerk webhook |
+| `NEXT_PUBLIC_DRONE_COG_URL` | URL ของไฟล์ COG บน Cloudflare R2 (สำหรับ overlay ภาพโดรนบนแผนที่) |
 
-## Deploy on Vercel
+---
 
-This project is configured for Vercel deployment. Connect your GitHub repository in the Vercel dashboard and set the environment variables above in **Project Settings → Environment Variables**.
+## Deploy on Cloudflare Pages
 
-Push to the `main` branch and the GitHub Actions workflow (`.github/workflows/deploy.yml`) will automatically run `vercel --prod`.
+โปรเจกต์นี้ configured สำหรับ Cloudflare Pages ผ่าน [`@opennextjs/cloudflare`](https://github.com/opennextjs/opennextjs-cloudflare)
 
-Required Vercel secrets (set in GitHub → Settings → Secrets and variables → Actions):
+### คำสั่ง
 
-| Secret | Where to find it |
-|---|---|
-| `VERCEL_TOKEN` | Vercel Dashboard → Account Settings → Tokens |
-| `VERCEL_ORG_ID` | `.vercel/project.json` after running `vercel link` |
-| `VERCEL_PROJECT_ID` | `.vercel/project.json` after running `vercel link` |
+```bash
+# Build สำหรับ Cloudflare Workers
+npm run build
+
+# Preview ก่อน deploy
+npm run preview
+
+# Deploy ขึ้น Cloudflare Pages
+npm run deploy
+```
+
+### ขั้นตอน Deploy
+
+1. รัน `wrangler login` เพื่อ authenticate กับ Cloudflare
+2. ตั้งค่า environment variables ใน Cloudflare Pages Dashboard → **Settings → Environment Variables**
+3. รัน `npm run deploy` หรือ connect GitHub repository ใน Cloudflare Pages Dashboard เพื่อ auto-deploy เมื่อ push ไปที่ branch `main`
+
+> ไฟล์ `wrangler.jsonc` เก็บ configuration ของ Cloudflare Workers/Pages รวมถึง R2 bucket binding สำหรับ cache
