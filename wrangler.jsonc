@@ -26,11 +26,13 @@
     {
       "binding": "HYPERDRIVE",
       "id": "50ebedaa730f4cb890a07b7132beb18c"
-      // localConnectionString is used by `wrangler dev` / `next dev` to emulate
-      // Hyperdrive locally. Omit it here and set the env var instead:
-      //   CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE=<your Neon URL>
-      // in .env.local (see .env.local.example). OpenNext picks up that variable
-      // automatically so you don't have to hard-code a connection string here.
+      // localConnectionString is used by `wrangler dev` / `next dev` / CI to
+      // emulate Hyperdrive locally. Rather than hard-coding a connection string
+      // here, set the env var CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE
+      // to your Neon (or local Postgres) URL in TWO places:
+      //   • Local development: add it to .env.local (see .env.local.example)
+      //   • Cloudflare CI build: add it under Pages → Settings → Environment
+      //     Variables (Production & Preview) in the Cloudflare dashboard
     }
   ],
   "images": {

@@ -68,6 +68,7 @@
 | Variable | หน้าที่ |
 |---|---|
 | `DATABASE_URL` | Neon connection string |
+| `CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE` | Neon connection string สำหรับ Hyperdrive emulation (local dev & Cloudflare CI build) |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key |
 | `CLERK_SECRET_KEY` | Clerk secret key |
 | `CLERK_WEBHOOK_SECRET` | Svix signing secret สำหรับ Clerk webhook |
@@ -96,6 +97,18 @@ npm run deploy
 
 1. รัน `wrangler login` เพื่อ authenticate กับ Cloudflare
 2. ตั้งค่า environment variables ใน Cloudflare Pages Dashboard → **Settings → Environment Variables**
+
+   | Variable | ค่าที่ต้องตั้ง |
+   |---|---|
+   | `DATABASE_URL` | Neon connection string |
+   | `CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE` | Neon connection string เดียวกับ `DATABASE_URL` — จำเป็นสำหรับ Hyperdrive emulation ระหว่าง CI build |
+   | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key |
+   | `CLERK_SECRET_KEY` | Clerk secret key |
+   | `CLERK_WEBHOOK_SECRET` | Clerk webhook signing secret |
+   | `NEXT_PUBLIC_DRONE_COG_URL` | URL ของไฟล์ COG บน R2 |
+
+   > **หมายเหตุ:** ถ้าไม่ตั้ง `CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE` ใน Cloudflare build environment, CI จะ error: *"no local hyperdrive connection string"*
+
 3. รัน `npm run deploy` หรือ connect GitHub repository ใน Cloudflare Pages Dashboard เพื่อ auto-deploy เมื่อ push ไปที่ branch `main`
 
 > ไฟล์ `wrangler.jsonc` เก็บ configuration ของ Cloudflare Workers/Pages รวมถึง R2 bucket binding สำหรับ cache
