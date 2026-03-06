@@ -185,7 +185,8 @@ export default function AgroforestryMap({ plots, flyToTarget }: AgroforestryMapP
           <Source
             id="drone-source"
             type="raster"
-            tiles={[`cog://https://pub-97c3cf3b608a46bdb2dbf8d3e749a995.r2.dev/maechaem-db-drone/mnj_bf-1km.tif`]}
+            // เปลี่ยนจาก tiles เป็น url และเอาชื่อ bucket ออกจากลิงก์
+            url="cog://https://pub-97c3cf3b608a46bdb2dbf8d3e749a995.r2.dev/mnj_bf-1km.tif"
             tileSize={256}
           >
             <Layer
