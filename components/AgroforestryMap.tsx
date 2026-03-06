@@ -57,6 +57,9 @@ const polygonOutlineStyle = {
   },
 };
 
+// 🚁 URL ภาพโดรน COG จาก Cloudflare R2 (ตั้งค่าผ่าน NEXT_PUBLIC_DRONE_COG_URL)
+const DRONE_COG_URL = process.env.NEXT_PUBLIC_DRONE_COG_URL;
+
 interface PopupInfo {
   longitude: number;
   latitude: number;
@@ -177,6 +180,22 @@ export default function AgroforestryMap({ plots, flyToTarget }: AgroforestryMapP
         onClick={onMapClick}
         cursor="pointer"
       >
+        {/* 🚁 ส่วนการดึงภาพโดรนจาก Cloudflare R2 */}
+        {DRONE_COG_URL && (
+          <Source
+            id="drone-source"
+            type="raster"
+            tiles={[`cog://${DRONE_COG_URL}`]}
+            tileSize={256}
+          >
+            <Layer
+              id="drone-layer"
+              type="raster"
+              paint={{ 'raster-opacity': 1 }}
+            />
+          </Source>
+        )}
+
         {plotsData && (
           <Source id="plots-source" type="geojson" data={plotsData}>
             <Layer {...polygonLayerStyle} />
