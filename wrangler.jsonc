@@ -25,7 +25,7 @@
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
-      "id": "50ebedaa730f4cb890a07b7132beb18c"
+      "id": "50ebedaa730f4cb890a07b7132beb18c",
       "localConnectionString": "postgresql://dummy:dummy@localhost:5432/dummy"
       // localConnectionString is used by `wrangler dev` / `next dev` / CI to
       // emulate Hyperdrive locally. Rather than hard-coding a connection string
