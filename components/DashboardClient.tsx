@@ -54,19 +54,17 @@ export default function DashboardClient({ plots }: DashboardClientProps) {
     const center = getGeometryCenter(feature.geometry);
     if (!center) return;
     setActiveIndex(index);
-    setFlyToTarget({ ...center }); // new object every click → always triggers flyTo effect
+    setFlyToTarget({ ...center });
   };
 
   return (
     <div className="flex flex-1 overflow-hidden">
-      {/* ---------------------------------------------------------------- */}
-      {/* Sidebar                                                           */}
-      {/* ---------------------------------------------------------------- */}
-      <aside className="hidden md:flex w-64 flex-col gap-4 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 overflow-y-auto">
-        <h2 className="font-semibold text-gray-800 dark:text-gray-200">
+      {/* Sidebar */}
+      <aside className="hidden md:flex w-64 flex-col gap-3 border-r border-gray-100 bg-gray-50 p-4 overflow-y-auto">
+        <h2 className="font-semibold text-gray-700 text-sm">
           ข้อมูลแปลง ({plots.features.length} แปลง)
         </h2>
-        <ul className="space-y-2">
+        <ul className="space-y-1.5">
           {plots.features.map((f, i) => {
             const p = f.properties;
             const isActive = activeIndex === i;
@@ -75,29 +73,27 @@ export default function DashboardClient({ plots }: DashboardClientProps) {
                 <button
                   type="button"
                   onClick={() => handlePlotClick(i)}
-                  className={`w-full text-left rounded-md p-3 text-sm transition-colors ${
+                  className={`w-full text-left rounded-lg p-3 text-sm transition-colors ${
                     isActive
-                      ? 'bg-green-100 dark:bg-green-900/40 ring-1 ring-green-500'
-                      : 'bg-gray-50 dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/20'
+                      ? 'bg-green-50 ring-1 ring-green-400'
+                      : 'bg-white hover:bg-green-50 border border-gray-100'
                   }`}
                 >
                   <p
                     className={`font-medium ${
-                      isActive
-                        ? 'text-green-800 dark:text-green-300'
-                        : 'text-gray-900 dark:text-gray-100'
+                      isActive ? 'text-green-700' : 'text-gray-800'
                     }`}
                   >
                     {p.farmer_name ?? p.plot_code ?? `แปลง ${i + 1}`}
                   </p>
                   {p.plot_code != null && (
-                    <p className="text-gray-500">รหัส: {p.plot_code}</p>
+                    <p className="text-gray-400 text-xs mt-0.5">รหัส: {p.plot_code}</p>
                   )}
                   {p.area_rai != null && (
-                    <p className="text-gray-500">{p.area_rai} ไร่</p>
+                    <p className="text-gray-400 text-xs">{p.area_rai} ไร่</p>
                   )}
                   {p.elev_mean != null && (
-                    <p className="text-gray-500">{p.elev_mean} ม.</p>
+                    <p className="text-gray-400 text-xs">{p.elev_mean} ม.</p>
                   )}
                 </button>
               </li>
@@ -106,11 +102,9 @@ export default function DashboardClient({ plots }: DashboardClientProps) {
         </ul>
       </aside>
 
-      {/* ---------------------------------------------------------------- */}
-      {/* Map — takes up remaining space                                    */}
-      {/* ---------------------------------------------------------------- */}
-      <main className="flex-1 p-4">
-        <div className="h-full min-h-[500px] rounded-xl overflow-hidden shadow">
+      {/* Map — takes up remaining space */}
+      <main className="flex-1 p-3">
+        <div className="h-full min-h-[500px] rounded-xl overflow-hidden shadow-sm">
           <AgroforestryMap plots={plots} flyToTarget={flyToTarget} />
         </div>
       </main>

@@ -46,10 +46,10 @@ export default function RootLayout({
       <body className="antialiased">
         <ClerkProvider>
           <div className="flex min-h-screen flex-col">
-            <header role="banner" className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-6 py-4">
+            <header role="banner" className="flex items-center justify-between border-b border-gray-100 bg-white px-6 py-4 shadow-sm">
               <Link
                 href="/"
-                className="font-semibold text-gray-900 dark:text-gray-100 text-lg hover:opacity-80 transition-opacity"
+                className="font-semibold text-gray-800 text-lg hover:opacity-75 transition-opacity"
               >
                 🌳 Mae Chaem Agroforestry DB
               </Link>
@@ -57,19 +57,19 @@ export default function RootLayout({
                 <Show when="signed-out">
                   <SignInButton mode="modal" forceRedirectUrl="/dashboard">
                     <button className="rounded-full bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800 transition-colors">
-                      Sign In
+                      เข้าสู่ระบบ
                     </button>
                   </SignInButton>
                   <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
-                    <button className="rounded-full border border-green-700 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50 dark:hover:bg-green-950 transition-colors">
-                      Sign Up
+                    <button className="rounded-full border border-green-600 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-50 transition-colors">
+                      สมัครสมาชิก
                     </button>
                   </SignUpButton>
                 </Show>
                 <Show when="signed-in">
                   <Link
                     href="/dashboard"
-                    className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
+                    className="text-sm font-medium text-gray-600 hover:text-gray-900 hover:underline"
                   >
                     Dashboard
                   </Link>
