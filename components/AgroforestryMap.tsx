@@ -1,16 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import maplibregl from 'maplibre-gl';
-import { cogProtocol } from '@geomatico/maplibre-cog-protocol';
 import Map, { Source, Layer, Popup, MapMouseEvent } from 'react-map-gl/maplibre';
 import type { MapRef } from 'react-map-gl/maplibre';
 import type { StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { PlotFeatureCollection } from "@/components/shared";
-
-// Flag to prevent re-registering the COG protocol on re-renders
-let cogProtocolRegistered = false;
 
 // 🛰️ Satellite base map using Esri World Imagery raster tiles
 const SATELLITE_MAP_STYLE: StyleSpecification = {
@@ -56,9 +51,6 @@ const polygonOutlineStyle = {
   },
 };
 
-// 🚁 URL ภาพโดรน COG จาก Cloudflare R2 (ตั้งค่าผ่าน NEXT_PUBLIC_DRONE_COG_URL)
-const DRONE_COG_URL = process.env.NEXT_PUBLIC_DRONE_COG_URL;
-
 interface PopupInfo {
   longitude: number;
   latitude: number;
@@ -90,19 +82,6 @@ export default function AgroforestryMap({ plots, flyToTarget }: AgroforestryMapP
     zoom: 11,
     pitch: 0,
   });
-
-  // ลงทะเบียนโปรโตคอลเพื่อให้ MapLibre อ่าน COG ได้
-  useEffect(() => {
-    // ตรวจสอบเพื่อไม่ให้ลงทะเบียนซ้ำตอน Re-render
-    if (!cogProtocolRegistered) {
-      maplibregl.addProtocol('cog', cogProtocol);
-      cogProtocolRegistered = true;
-    }
-    return () => {
-      maplibregl.removeProtocol('cog');
-      cogProtocolRegistered = false;
-    };
-  }, []);
 
   // ดึงข้อมูลตอนที่ Component โหลดครั้งแรก
   useEffect(() => {
@@ -179,26 +158,6 @@ export default function AgroforestryMap({ plots, flyToTarget }: AgroforestryMapP
         onClick={onMapClick}
         cursor="pointer"
       >
-        {/* 🚁 ส่วนการดึงภาพโดรนจาก Cloudflare R2 */}
-        {(
-          <Source
-            id="drone-source"
-            type="raster"
-            // เปลี่ยนจาก tiles เป็น url และเอาชื่อ bucket ออกจากลิงก์
-            url="cog://https://maechaem-db-rfd.work/mnj_bf-1km.tif"
-            tileSize={256}
-          >
-            <Layer
-              id="drone-layer"
-              type="raster"
-              paint={{ 
-                'raster-opacity': 1,
-                'raster-fade-duration': 0  // ปิดการเฟด ให้รูปเด้งขึ้นมาทันที
-              }}
-            />
-          </Source>
-        )}
-
         {plotsData && (
           <Source id="plots-source" type="geojson" data={plotsData}>
             <Layer {...polygonLayerStyle} />
